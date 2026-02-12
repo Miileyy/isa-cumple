@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#86b6ff" />
+  <title>Feliz cumple, Isa ✈️💙</title>
+
+  <style>
+    :root{
+      --bg1:#bfe0ff;
+      --bg2:#7fb3ff;
+      --card:#ffffffcc;
+      --text:#0b1630;
+      --muted:#31446b;
+      --btn:#0b1630;
+      --btnText:#fff;
+      --shadow: 0 12px 40px rgba(0,0,0,.18);
+      --radius: 22px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, #e9f4ff 0%, var(--bg1) 35%, var(--bg2) 100%);
+      overflow:hidden;
+    }
+
+    /* nubes simples */
+    .cloud{
+      position:absolute;
+      width:260px; height:90px;
+      background:#fff;
+      border-radius:999px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.10));
+      opacity:.95;
+      z-index: 0;
+    }
+    .cloud:before,.cloud:after{
+      content:"";
+      position:absolute;
+      background:#fff;
+      width:120px; height:120px;
+      border-radius:999px;
+      top:-55px;
+      left:35px;
+    }
+    .cloud:after{
+      width:150px; height:150px;
+      top:-75px; left:105px;
+    }
+    .c1{top:40px; left:-60px; transform:scale(1.1)}
+    .c2{top:120px; right:-80px; transform:scale(1.2)}
+    .c3{bottom:90px; left:10%; transform:scale(.9); opacity:.85}
+
+    .app{
+      position:relative;
+      z-index: 1;
+      height:100%;
+      display:grid;
+      grid-template-rows: 1fr auto;
+      padding: clamp(14px, 2.5vw, 26px);
+      gap: 14px;
+    }
+
+    .stage{
+      position:relative;
+      display:grid;
+      place-items:center;
+      min-height: 0;
+    }
+
+    .card{
+      width:min(980px, 100%);
+      height:min(680px, 100%);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:grid;
+      grid-template-rows: auto 1fr auto;
+      border: 1px solid rgba(255,255,255,.55);
+    }
+
+    .topbar{
+      padding: 16px 18px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .badge{
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.06);
+      padding: 6px 10px;
+      border-radius:999px;
+      white-space: nowrap;
+    }
+
+    /* CONTENIDO: por defecto 1 columna */
+    .content{
+      padding: 14px 18px 18px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+      min-height:0;
+    }
+
+    /* Cuando hay imagen: PC = 2 columnas */
+    .content.has-image{
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .title{
+      font-size: clamp(22px, 4.2vw, 44px);
+      line-height:1.05;
+      margin:0;
+      letter-spacing: -.02em;
+    }
+
+    .subtitle{
+      margin: 8px 0 0;
+      font-size: clamp(15px, 2.2vw, 18px);
+      line-height:1.45;
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    .imgwrap{
+      width:100%;
+      display:grid;
+      place-items:center;
+      min-height:0;
+    }
+
+    /* Imagen protagonista */
+    .img{
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 520px;  /* grande en PC */
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+      background: rgba(255,255,255,.6);
+      object-fit: contain;
+    }
+
+    .footer{
+      padding: 12px 18px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-top: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.35);
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: var(--btn);
+      color: var(--btnText);
+      font-weight:600;
+      font-size: 14px;
+    }
+
+    button.secondary{
+      background: rgba(11,22,48,.12);
+      color: var(--text);
+      border: 1px solid rgba(11,22,48,.18);
+    }
+
+    button:focus{
+      outline: 3px solid rgba(0,0,0,.25);
+      outline-offset: 2px;
+    }
+
+    .hint{
+      font-size: 13px;
+      color: var(--muted);
+      opacity:.95;
+    }
+
+    /* confetti simple en portada */
+    .confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+    }
+    .confetti span{
+      position:absolute;
+      top:-12px;
+      width:10px; height:16px;
+      opacity:.9;
+      border-radius: 2px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall{
+      to { transform: translateY(120vh) rotate(360deg); }
+    }
+
+    /* RESPONSIVE: en móvil, imagen arriba (y grande) */
+    @media (max-width: 520px){
+      .footer{flex-direction:column; align-items:stretch}
+      .controls{justify-content:space-between}
+      button{width:49%}
+      button.secondary{width:100%}
+
+      .content.has-image{
+        grid-template-columns: 1fr; /* una columna */
+      }
+      .content.has-image #imgwrap{
+        order: -1; /* imagen arriba */
+      }
+
+      .img{
+        max-height: 420px; /* grande en móvil */
+      }
+    }
+
+    /* accesible */
+    .sr-only{
+      position:absolute;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+
+  <main class="app" aria-label="Tarjeta de cumpleaños para Isa">
+    <section class="stage">
+      <div class="card" id="card" tabindex="0" aria-live="polite" aria-atomic="true">
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+        <header class="topbar">
+          <div class="badge" id="pageBadge">Página 1 / 14</div>
+          <div class="badge" id="smallHint">Tocá la tarjeta o deslizá →</div>
+        </header>
+
+        <div class="content" id="content">
+          <div>
+            <h1 class="title" id="title">Holiss Isa</h1>
+            <p class="subtitle" id="text">Soy Gabi :)</p>
+          </div>
+
+          <div class="imgwrap" id="imgwrap" style="display:none">
+            <img class="img" id="img" alt="" loading="eager" />
+            <p class="sr-only" id="imgAlt"></p>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="controls">
+            <button class="secondary" id="prevBtn" type="button" aria-label="Página anterior">← Anterior</button>
+            <button id="nextBtn" type="button" aria-label="Página siguiente">Siguiente →</button>
+          </div>
+
+          <div class="hint" id="hint">
+            Tip: swipe en móvil · Flechas/Enter en PC
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <div class="hint" style="text-align:center; opacity:.85">
+      Hecho con 💙 por Gabi · (sin sonido, para que abra en cualquier lado)
+    </div>
+  </main>
+
+  <script>
+    // ======= SLIDES (mapeado a tus nombres reales en isa-avion/) =======
+    const slides = [
+      { title: "Holiss Isa", text: "Soy Gabi :)\n\n🎉", img: null, alt: "" },
+
+      { title: "FELIZ CUMPLE MI CORAZÓN ✨",
+        text: "Que disfrutes tu día,\nporque yo ya lo estoy disfrutando…\n\nes tu cumpleaños\n¿qué más feliz podría ser\nsabiendo que estás acá conmigo?",
+        img: null, alt: "" },
+
+      { title: "😄",
+        text: "Como que un amor a la antigua\nno es andar con alguien\nmás antiguo que yo :)",
+        img: null, alt: "" },
+
+      { title: "Aviso importante ✈️",
+        text: "Este es mi intento de coqueteo con aviones ✈️\n\nNO te rías.",
+        img: null, alt: "" },
+
+      // PÁGINA 5
+      { title: "✈️ Supermarine Spitfire",
+        text: "No sé de aviones clásicos…\npero se ve matador, como vos.\n\n(NO me funes Isa,\nvos sabías que mi sentido de la gracia\nestá medio roto 😅)",
+        img: "isa-avion/1_Supermarine.png",
+        alt: "Tarjeta del avión Supermarine Spitfire." },
+
+      // PÁGINA 6
+      { title: "✈️ Concorde",
+        text: "Todo fue rápido…\ny curiosamente me gustó.\n\n(Soy una víctima,\nme sedujiste… seguí así 😌)",
+        img: "isa-avion/2_Concorde.png",
+        alt: "Tarjeta del avión Concorde." },
+
+      // PÁGINA 7
+      { title: "✈️ Boeing 747",
+        text: "Grande, imponente…\ncomo algunas primeras impresiones.\n\n(Me encantás,\n¿ya te había dicho?)",
+        img: "isa-avion/3_Boeing.jpg",
+        alt: "Tarjeta del avión Boeing 747." },
+
+      // PÁGINA 8
+      { title: "✈️ Airbus A380",
+        text: "Dicen que es enorme\ny difícil de ignorar…\n\n(Te quiero más\nde lo que creés 💙)",
+        img: "isa-avion/4_Airbus.png",
+        alt: "Tarjeta del avión Airbus A380." },
+
+      // PÁGINA 9
+      { title: "✈️ Boeing KC-135 Stratotanker",
+        text: "No es fácil impresionar\na un ingeniero…\n\npero con vos lo intento.\n(No te rías 😅)",
+        img: "isa-avion/5_Boeing8.png",
+        alt: "Tarjeta del avión Boeing KC-135 Stratotanker." },
+
+      // PÁGINA 10
+      { title: "✈️ General Dynamics F-16 Fighting Falcon",
+        text: "No sé hacer esas maniobras,\npero me dejé llevar.\n\n(ggggg 😄)",
+        img: "isa-avion/6_Dynamics.png",
+        alt: "Tarjeta del avión General Dynamics F-16 Fighting Falcon." },
+
+      // PÁGINA 11
+      { title: "✈️ Lockheed Martin F-22 Raptor",
+        text: "Silencioso, rápido…\ncurioso combo 👀",
+        img: "isa-avion/7_raptor.png",
+        alt: "Tarjeta del avión Lockheed Martin F-22 Raptor." },
+
+      // PÁGINA 12
+      { title: "✈️ Northrop Grumman B-2 Spirit",
+        text: "Fuera de este mundo…\nIsa, ¿sos real? ✨",
+        img: "isa-avion/8_isa_sos_real.png",
+        alt: "Tarjeta del avión Northrop Grumman B-2 Spirit." },
+
+      { title: "🤍",
+        text: "Inmensamente feliz de conocerte\ny de compartir con vos.\n\nCelebro y bendigo tu vida 🤍",
+        img: null, alt: "" },
+
+      { title: "Cantares 2:16",
+        text: "“Mi amado es mío,\ny yo soy suya.”",
+        img: null, alt: "" },
+    ];
+
+    // ======= NAV (click, teclado, swipe) =======
+    const card = document.getElementById("card");
+    const contentEl = document.getElementById("content");
+    const titleEl = document.getElementById("title");
+    const textEl = document.getElementById("text");
+    const imgWrap = document.getElementById("imgwrap");
+    const imgEl = document.getElementById("img");
+    const imgAlt = document.getElementById("imgAlt");
+    const badge = document.getElementById("pageBadge");
+    const confetti = document.getElementById("confetti");
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    let idx = 0;
+
+    function makeConfetti(){
+      confetti.innerHTML = "";
+      const colors = ["#ff5a5f","#ffd166","#06d6a0","#118ab2","#8338ec"];
+      const n = 60;
+      for (let i=0;i<n;i++){
+        const s = document.createElement("span");
+        const left = Math.random()*100;
+        const dur = 2 + Math.random()*2.8;
+        const delay = Math.random()*1.2;
+        const size = 6 + Math.random()*8;
+        s.style.left = left + "vw";
+        s.style.width = size + "px";
+        s.style.height = (size*1.3) + "px";
+        s.style.background = colors[Math.floor(Math.random()*colors.length)];
+        s.style.animationDuration = dur + "s";
+        s.style.animationDelay = delay + "s";
+        confetti.appendChild(s);
+      }
+    }
+
+    function setSlide(i){
+      idx = Math.max(0, Math.min(slides.length - 1, i));
+      const s = slides[idx];
+
+      titleEl.textContent = s.title;
+      textEl.textContent = s.text;
+      badge.textContent = `Página ${idx + 1} / ${slides.length}`;
+
+      const hasImg = !!s.img;
+      imgWrap.style.display = hasImg ? "grid" : "none";
+      contentEl.classList.toggle("has-image", hasImg);
+
+      if (hasImg){
+        imgEl.src = s.img;
+        imgEl.alt = s.alt || "";
+        imgAlt.textContent = s.alt || "";
+      } else {
+        imgEl.removeAttribute("src");
+        imgEl.alt = "";
+        imgAlt.textContent = "";
+      }
+
+      prevBtn.disabled = idx === 0;
+      nextBtn.textContent = (idx === slides.length - 1) ? "Volver al inicio ↺" : "Siguiente →";
+
+      if (idx === 0){
+        makeConfetti();
+        confetti.style.display = "block";
+      } else {
+        confetti.style.display = "none";
+        confetti.innerHTML = "";
+      }
+
+      card.focus({preventScroll:true});
+    }
+
+    function next(){
+      if (idx === slides.length - 1) setSlide(0);
+      else setSlide(idx + 1);
+    }
+    function prev(){ setSlide(idx - 1); }
+
+    prevBtn.addEventListener("click", prev);
+    nextBtn.addEventListener("click", next);
+
+    // tap/click para avanzar
+    card.addEventListener("click", (e) => {
+      if (e.target.tagName.toLowerCase() === "button") return;
+      next();
+    });
+
+    // teclado
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " "){
+        e.preventDefault(); next();
+      }
+      if (e.key === "ArrowLeft"){
+        e.preventDefault(); prev();
+      }
+    });
+
+    // swipe
+    let startX = 0, startY = 0, touching = false;
+    card.addEventListener("touchstart", (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      touching = true;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, {passive:true});
+
+    card.addEventListener("touchend", (e) => {
+      if (!touching) return;
+      touching = false;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){
+        if (dx < 0) next();
+        else prev();
+      }
+    }, {passive:true});
+
+    // init
+    setSlide(0);
+  </script>
+</body>
+</html>
