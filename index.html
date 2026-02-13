@@ -85,6 +85,7 @@
       display:grid;
       grid-template-rows: auto 1fr auto;
       border: 1px solid rgba(255,255,255,.55);
+      position: relative; /* para overlays */
     }
 
     .topbar{
@@ -93,6 +94,8 @@
       align-items:center;
       justify-content:space-between;
       gap: 10px;
+      position: relative;
+      z-index: 3;
     }
 
     .badge{
@@ -113,6 +116,8 @@
       gap: 14px;
       align-items: start;
       min-height:0;
+      position: relative;
+      z-index: 2;
     }
 
     /* Cuando hay imagen: PC = 2 columnas */
@@ -154,6 +159,13 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.18);
       background: rgba(255,255,255,.6);
       object-fit: contain;
+
+      /* performance / suavidad */
+      opacity: 1;
+      transition: opacity .22s ease;
+    }
+    .img.is-loading{
+      opacity: 0;
     }
 
     .footer{
@@ -164,6 +176,8 @@
       gap:12px;
       border-top: 1px solid rgba(0,0,0,.06);
       background: rgba(255,255,255,.35);
+      position: relative;
+      z-index: 3;
     }
 
     .controls{
@@ -209,6 +223,7 @@
       pointer-events:none;
       overflow:hidden;
       display:none;
+      z-index: 4;
     }
     .confetti span{
       position:absolute;
@@ -220,6 +235,53 @@
     }
     @keyframes fall{
       to { transform: translateY(120vh) rotate(360deg); }
+    }
+
+    /* ===== Overlay de texto (solo para móvil en páginas con imagen) ===== */
+    .tap-hint{
+      position:absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 150px;
+      background: rgba(255,255,255,.78);
+      color: #0b1630;
+      border: 1px solid rgba(0,0,0,.08);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      z-index: 6;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .overlay{
+      position:absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 96px;              /* deja lugar para los botones */
+      background: rgba(10, 16, 28, 0.84);
+      color: #fff;
+      border-radius: 18px;
+      padding: 14px 14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+      display:none;
+      z-index: 7;
+      max-height: 48%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .overlay .otitle{
+      font-size: 18px;
+      line-height: 1.15;
+      margin: 0 0 8px 0;
+      font-weight: 850;
+    }
+    .overlay .obody{
+      margin: 0;
+      white-space: pre-line;
+      font-size: 15px;
+      line-height: 1.45;
+      opacity: .96;
     }
 
     /* RESPONSIVE: en móvil, imagen arriba (y grande) */
@@ -235,9 +297,8 @@
       .content.has-image #imgwrap{
         order: -1; /* imagen arriba */
       }
-
       .img{
-        max-height: 420px; /* grande en móvil */
+        max-height: 460px; /* un pelín más grande */
       }
     }
 
@@ -262,19 +323,26 @@
       <div class="card" id="card" tabindex="0" aria-live="polite" aria-atomic="true">
         <div class="confetti" id="confetti" aria-hidden="true"></div>
 
+        <!-- overlay + hint (solo se usan en móvil con imagen) -->
+        <div class="tap-hint" id="tapHint">Tocá para ver el mensaje 💬</div>
+        <div class="overlay" id="overlay" aria-hidden="true">
+          <h2 class="otitle" id="overlayTitle"></h2>
+          <p class="obody" id="overlayBody"></p>
+        </div>
+
         <header class="topbar">
           <div class="badge" id="pageBadge">Página 1 / 14</div>
           <div class="badge" id="smallHint">Tocá la tarjeta o deslizá →</div>
         </header>
 
         <div class="content" id="content">
-          <div>
+          <div id="textBlock">
             <h1 class="title" id="title">Holiss Isa</h1>
             <p class="subtitle" id="text">Soy Gabi :)</p>
           </div>
 
           <div class="imgwrap" id="imgwrap" style="display:none">
-            <img class="img" id="img" alt="" loading="eager" />
+            <img class="img" id="img" alt="" loading="eager" decoding="async" />
             <p class="sr-only" id="imgAlt"></p>
           </div>
         </div>
@@ -298,12 +366,12 @@
   </main>
 
   <script>
-    // ======= SLIDES (mapeado a tus nombres reales en isa-avion/) =======
+    // ======= SLIDES =======
     const slides = [
       { title: "Holiss Isa", text: "Soy Gabi :)\n\n🎉", img: null, alt: "" },
 
       { title: "FELIZ CUMPLE MI CORAZÓN ✨",
-        text: "Feliz 26 añitos :)))\n\nQue disfrutes tu día,\nporque yo ya lo estoy disfrutando…\n\ncompartirlo contigo\nme hace inmensamente feliz 🤍",
+        text: "Feliz 26 añitos :)))\n\nQue disfrutes tu día,\nporque yo ya lo estoy disfrutando…\n\nCompartirlo contigo\nme hace inmensamente feliz 🤍",
         img: null, alt: "" },
 
       { title: "😄",
@@ -314,49 +382,41 @@
         text: "Este es mi intento de coqueteo con aviones ✈️\n\nNO te rías.",
         img: null, alt: "" },
 
-      // PÁGINA 5
       { title: "✈️ Supermarine Spitfire",
         text: "No sé de aviones clásicos…\npero se ve matador, como vos.\n\n(NO me funes Isa,\nvos sabías que mi sentido de la gracia\nestá medio roto 😅)",
         img: "isa-avion/1_Supermarine.png",
         alt: "Tarjeta del avión Supermarine Spitfire." },
 
-      // PÁGINA 6
       { title: "✈️ Concorde",
         text: "Todo fue rápido…\ny curiosamente me gustó.\n\n(Soy una víctima,\nme sedujiste… seguí así 😌)",
         img: "isa-avion/2_Concorde.png",
         alt: "Tarjeta del avión Concorde." },
 
-      // PÁGINA 7
       { title: "✈️ Boeing 747",
         text: "Grande, imponente…\ncomo algunas primeras impresiones.\n\n(Me encantás,\n¿ya te había dicho?)",
         img: "isa-avion/3_Boeing.jpg",
         alt: "Tarjeta del avión Boeing 747." },
 
-      // PÁGINA 8
       { title: "✈️ Airbus A380",
         text: "Dicen que es enorme\ny difícil de ignorar…\n\n(Mi cariño es mas grande \nque el Airbus A380 💙)",
         img: "isa-avion/4_Airbus.png",
         alt: "Tarjeta del avión Airbus A380." },
 
-      // PÁGINA 9
       { title: "✈️ Boeing KC-135 Stratotanker",
         text: "No es fácil impresionar\na un ingeniero…\n\nPero con vos lo intento.\n(No te rías 😅)",
         img: "isa-avion/5_Boeing8.png",
         alt: "Tarjeta del avión Boeing KC-135 Stratotanker." },
 
-      // PÁGINA 10
       { title: "✈️ General Dynamics F-16 Fighting Falcon",
         text: "Yo no calculo trayectorias…\npero vos me desviaste el corazón 😄\n\n(la locura del enamoramiento)",
         img: "isa-avion/6_Dynamics.png",
         alt: "Tarjeta del avión General Dynamics F-16 Fighting Falcon." },
 
-      // PÁGINA 11
       { title: "✈️ Lockheed Martin F-22 Raptor",
         text: "Silencioso, rápido…\ny me deja sin palabras 👀",
         img: "isa-avion/7_raptor.png",
         alt: "Tarjeta del avión Lockheed Martin F-22 Raptor." },
 
-      // PÁGINA 12
       { title: "✈️ Northrop Grumman B-2 Spirit",
         text: "Fuera de este mundo…\nIsa, ¿sos real? ✨",
         img: "isa-avion/8_isa_sos_real.png",
@@ -371,9 +431,10 @@
         img: null, alt: "" },
     ];
 
-    // ======= NAV (click, teclado, swipe) =======
+    // ======= ELEMENTOS =======
     const card = document.getElementById("card");
     const contentEl = document.getElementById("content");
+    const textBlock = document.getElementById("textBlock");
     const titleEl = document.getElementById("title");
     const textEl = document.getElementById("text");
     const imgWrap = document.getElementById("imgwrap");
@@ -385,8 +446,33 @@
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
-    let idx = 0;
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayBody = document.getElementById("overlayBody");
+    const tapHint = document.getElementById("tapHint");
 
+    const isMobileMQ = window.matchMedia("(max-width: 520px)");
+    const isMobile = () => isMobileMQ.matches;
+
+    let idx = 0;
+    let overlayOpen = false;
+
+    // ======= PERF: PRELOAD IMÁGENES =======
+    const imageCache = new Map();
+    function preloadImages(){
+      slides.forEach(s => {
+        if (!s.img) return;
+        if (imageCache.has(s.img)) return;
+        const im = new Image();
+        im.decoding = "async";
+        im.loading = "eager";
+        im.src = s.img;
+        imageCache.set(s.img, im);
+      });
+    }
+    preloadImages();
+
+    // ======= CONFETTI =======
     function makeConfetti(){
       confetti.innerHTML = "";
       const colors = ["#ff5a5f","#ffd166","#06d6a0","#118ab2","#8338ec"];
@@ -407,10 +493,33 @@
       }
     }
 
+    function closeOverlay(){
+      overlayOpen = false;
+      overlay.style.display = "none";
+      overlay.setAttribute("aria-hidden","true");
+    }
+    function toggleOverlay(){
+      if (!isMobile()) return;
+      const s = slides[idx];
+      if (!s.img) return;
+
+      overlayOpen = !overlayOpen;
+      if (overlayOpen){
+        overlayTitle.textContent = s.title;
+        overlayBody.textContent = s.text;
+        overlay.style.display = "block";
+        overlay.setAttribute("aria-hidden","false");
+      } else {
+        closeOverlay();
+      }
+    }
+
+    // ======= SET SLIDE =======
     function setSlide(i){
       idx = Math.max(0, Math.min(slides.length - 1, i));
       const s = slides[idx];
 
+      // texto normal (PC / slides sin imagen)
       titleEl.textContent = s.title;
       textEl.textContent = s.text;
       badge.textContent = `Página ${idx + 1} / ${slides.length}`;
@@ -419,10 +528,39 @@
       imgWrap.style.display = hasImg ? "grid" : "none";
       contentEl.classList.toggle("has-image", hasImg);
 
+      // reset overlay/hint
+      closeOverlay();
+      tapHint.style.display = "none";
+
+      // móvil + imagen => texto NO ocupa la pantalla (se ve con overlay)
+      if (isMobile() && hasImg){
+        // oculto el bloque de texto, pero lo mantengo para PC y accesibilidad
+        textBlock.style.display = "none";
+        tapHint.style.display = "inline-block";
+      } else {
+        textBlock.style.display = "block";
+      }
+
+      // imagen con fade-in
       if (hasImg){
-        imgEl.src = s.img;
+        imgEl.classList.add("is-loading");
+
+        const newSrc = s.img;
+
+        // set alt
         imgEl.alt = s.alt || "";
         imgAlt.textContent = s.alt || "";
+
+        // cambiar src y cuando cargue, mostrar
+        imgEl.onload = () => {
+          imgEl.classList.remove("is-loading");
+        };
+        imgEl.onerror = () => {
+          // si falla, al menos no queda invisible
+          imgEl.classList.remove("is-loading");
+        };
+
+        imgEl.src = newSrc;
       } else {
         imgEl.removeAttribute("src");
         imgEl.alt = "";
@@ -441,6 +579,15 @@
       }
 
       card.focus({preventScroll:true});
+
+      // precargar también la próxima (extra suave)
+      const nextSlide = slides[idx + 1];
+      if (nextSlide && nextSlide.img && !imageCache.has(nextSlide.img)){
+        const im = new Image();
+        im.decoding = "async";
+        im.src = nextSlide.img;
+        imageCache.set(nextSlide.img, im);
+      }
     }
 
     function next(){
@@ -452,13 +599,21 @@
     prevBtn.addEventListener("click", prev);
     nextBtn.addEventListener("click", next);
 
-    // tap/click para avanzar
+    // Click/tap:
+    // - En móvil con imagen: tap = mostrar/ocultar mensaje (overlay)
+    // - En el resto: tap = siguiente
     card.addEventListener("click", (e) => {
       if (e.target.tagName.toLowerCase() === "button") return;
-      next();
+
+      const s = slides[idx];
+      if (isMobile() && s.img){
+        toggleOverlay();
+      } else {
+        next();
+      }
     });
 
-    // teclado
+    // Teclado (PC)
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " "){
         e.preventDefault(); next();
@@ -466,9 +621,12 @@
       if (e.key === "ArrowLeft"){
         e.preventDefault(); prev();
       }
+      if (e.key === "Escape"){
+        closeOverlay();
+      }
     });
 
-    // swipe
+    // Swipe (móvil)
     let startX = 0, startY = 0, touching = false;
     card.addEventListener("touchstart", (e) => {
       if (!e.touches || e.touches.length !== 1) return;
@@ -484,10 +642,14 @@
       const dx = t.clientX - startX;
       const dy = t.clientY - startY;
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)){
+        closeOverlay();
         if (dx < 0) next();
         else prev();
       }
     }, {passive:true});
+
+    // Si cambia el tamaño (rotación), re-render del slide actual
+    isMobileMQ.addEventListener?.("change", () => setSlide(idx));
 
     // init
     setSlide(0);
